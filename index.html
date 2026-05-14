@@ -41,11 +41,11 @@ input,button,select{font-family:'Lato',sans-serif}
 
 /* ── NAV BOTTOM ── */
 .nav{display:flex;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:var(--safe-bottom)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border:none;background:none;cursor:pointer;color:var(--hint);font-size:10px;font-family:'Lato',sans-serif;transition:color .2s;min-width:0}
-.nav-btn i{font-size:20px;line-height:1}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;cursor:pointer;color:var(--hint);font-size:10px;font-family:'Lato',sans-serif;transition:color .2s;min-width:0;overflow:hidden}
+.nav-btn i{font-size:18px;line-height:1}
 .nav-btn.on{color:var(--navy)}
 .nav-btn.on i{color:var(--gold)}
-.nav-label{font-size:9px;font-weight:700;letter-spacing:.02em;line-height:1}
+.nav-label{font-size:8px;font-weight:700;white-space:nowrap;letter-spacing:.02em;line-height:1}
 
 /* ── MAIN SCROLL ── */
 .main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -182,6 +182,37 @@ input,button,select{font-family:'Lato',sans-serif}
 
 <!-- ══ PÁGINA 1: CALCULADORA ══ -->
 <div class="page on" id="p-calc">
+
+  <!-- CONSULTA RÁPIDA -->
+  <div class="card">
+    <div class="card-title">Consulta rápida por município</div>
+    <p class="section-label">Estado (UF)</p>
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px">
+      <select id="sel-uf2" onchange="filtrarMunicipios2()" style="width:100%;padding:10px 12px;font-size:14px;border:none;background:none;color:var(--text);font-family:'Lato',sans-serif;outline:none">
+        <option value="">Selecione o estado...</option>
+      </select>
+    </div>
+    <p class="section-label">Município / Ente</p>
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px">
+      <select id="sel-mun2" onchange="preencherCalc()" style="width:100%;padding:10px 12px;font-size:14px;border:none;background:none;color:var(--text);font-family:'Lato',sans-serif;outline:none" disabled>
+        <option value="">Selecione o município...</option>
+      </select>
+    </div>
+    <div id="consulta-resultado" style="display:none">
+      <div style="background:var(--green-bg);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:11px;color:var(--green-mid);font-weight:700">TOTAL PREVISTO 2026</span>
+          <span style="font-size:15px;font-weight:700;color:var(--green-dark)" id="cq-total">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:11px;color:var(--green-mid);font-weight:700">MÍNIMO 4% ETI</span>
+          <span style="font-size:15px;font-weight:700;color:var(--green-dark)" id="cq-4pct">—</span>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--hint);text-align:center">Valores carregados automaticamente na calculadora abaixo ↓</div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-title">Valores do FUNDEB</div>
     <div class="section-label">Valor total recebido do FUNDEB no exercício (R$)</div>
@@ -510,7 +541,7 @@ input,button,select{font-family:'Lato',sans-serif}
 <div class="nav">
   <button class="nav-btn on" id="nb-calc" onclick="goPage('calc',this)">
     <i class="ti ti-calculator"></i>
-    <span class="nav-label">Calculadora</span>
+    <span class="nav-label">Calc.</span>
   </button>
   <button class="nav-btn" id="nb-siope" onclick="goPage('siope',this)">
     <i class="ti ti-file-check"></i>
@@ -521,7 +552,7 @@ input,button,select{font-family:'Lato',sans-serif}
     <span class="nav-label">Plano</span>
   </button>
   <button class="nav-btn" id="nb-consulta" onclick="goPage('consulta',this)">
-    <i class="ti ti-search" aria-hidden="true"></i>
+    <i class="ti ti-search"></i>
     <span class="nav-label">Consulta</span>
   </button>
   <button class="nav-btn" id="nb-mais" onclick="goPage('mais',this)">
@@ -610,14 +641,56 @@ const DB={"AC":[{"n":"ACRELANDIA","c":18707653,"vf":0,"vt":2412976,"vr":0,"ct":2
 
 const ESTADOS={'AC':'Acre','AL':'Alagoas','AM':'Amazonas','AP':'Amapá','BA':'Bahia','CE':'Ceará','DF':'Distrito Federal','ES':'Espírito Santo','GO':'Goiás','MA':'Maranhão','MG':'Minas Gerais','MS':'Mato Grosso do Sul','MT':'Mato Grosso','PA':'Pará','PB':'Paraíba','PE':'Pernambuco','PI':'Piauí','PR':'Paraná','RJ':'Rio de Janeiro','RN':'Rio Grande do Norte','RO':'Rondônia','RR':'Roraima','RS':'Rio Grande do Sul','SC':'Santa Catarina','SE':'Sergipe','SP':'São Paulo','TO':'Tocantins'};
 
-// Popular UFs
+// Popular UFs — em todos os selects
 (function(){
-  const sel=document.getElementById('sel-uf');
-  Object.entries(ESTADOS).sort((a,b)=>a[1].localeCompare(b[1])).forEach(([k,v])=>{
+  const ufs=Object.entries(ESTADOS).sort((a,b)=>a[1].localeCompare(b[1]));
+  ['sel-uf','sel-uf2'].forEach(id=>{
+    const sel=document.getElementById(id);
+    if(!sel)return;
+    ufs.forEach(([k,v])=>{
+      const o=document.createElement('option');
+      o.value=k;o.textContent=v+' ('+k+')';
+      sel.appendChild(o);
+    });
+  });
+})();
+
+// ── CONSULTA INTEGRADA NA CALCULADORA ──
+function filtrarMunicipios2(){
+  const uf=document.getElementById('sel-uf2').value;
+  const sel=document.getElementById('sel-mun2');
+  sel.innerHTML='<option value="">Selecione o município...</option>';
+  document.getElementById('consulta-resultado').style.display='none';
+  if(!uf){sel.disabled=true;return;}
+  sel.disabled=false;
+  (DB[uf]||[]).forEach((m,i)=>{
     const o=document.createElement('option');
-    o.value=k;o.textContent=v+' ('+k+')';
+    o.value=i;o.textContent=m.n;
     sel.appendChild(o);
   });
+}
+
+function preencherCalc(){
+  const uf=document.getElementById('sel-uf2').value;
+  const idx=document.getElementById('sel-mun2').value;
+  if(!uf||idx===''){document.getElementById('consulta-resultado').style.display='none';return;}
+  const m=DB[uf][parseInt(idx)];
+  document.getElementById('consulta-resultado').style.display='block';
+  document.getElementById('cq-total').textContent=fmtR(m.t);
+  document.getElementById('cq-4pct').textContent=fmtR(Math.round(m.t*0.04));
+  // Preencher calculadora automaticamente
+  document.getElementById('vf').value=m.c;
+  if(m.ct>0){
+    setC('vtr',document.getElementById('tvtr'));
+    document.getElementById('vc').value=m.ct;
+  } else {
+    setC('n',document.getElementById('tn'));
+  }
+  calc();
+  _dadosAtual={fundeb:m.c,comp:m.ct,total:m.t};
+}
+
+
 })();
 
 function filtrarMunicipios(){
