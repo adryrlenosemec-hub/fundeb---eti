@@ -1,0 +1,26 @@
+{
+  "name": "Calculadora FUNDEB ETI",
+  "short_name": "FUNDEB ETI",
+  "description": "Calculadora e guia de gestão dos 4% do FUNDEB para educação em tempo integral - Resolução CIF nº 23/2026",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0D2B5E",
+  "theme_color": "#0D2B5E",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230D2B5E' rx='32'/><rect x='40' y='40' width='112' height='112' fill='%23C9A84C' rx='12'/><text x='96' y='115' font-size='64' text-anchor='middle' fill='%230D2B5E' font-family='serif' font-weight='bold'>4%</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230D2B5E' rx='80'/><rect x='100' y='100' width='312' height='312' fill='%23C9A84C' rx='32'/><text x='256' y='305' font-size='168' text-anchor='middle' fill='%230D2B5E' font-family='serif' font-weight='bold'>4%</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "finance", "productivity"],
+  "lang": "pt-BR"
+}

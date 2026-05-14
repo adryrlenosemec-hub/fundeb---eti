@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0D2B5E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FUNDEB ETI">
+<meta name="description" content="Calculadora e guia dos 4% do FUNDEB para educação em tempo integral">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<title>Calculadora FUNDEB ETI</title>
+<style>
+:root{
+  --navy:#0D2B5E;--gold:#C9A84C;--gold-light:#F0DFA0;
+  --green:#1D9E75;--green-bg:#E1F5EE;--green-dark:#085041;--green-mid:#0F6E56;
+  --amber-bg:#FAEEDA;--amber-dark:#633806;
+  --red-bg:#FCEBEB;--red-dark:#791F1F;
+  --blue-bg:#E6F1FB;--blue-dark:#185FA5;
+  --bg:#F4F6FA;--surface:#fff;--border:#E2E6ED;
+  --text:#1A2035;--muted:#6B7280;--hint:#9CA3AF;
+  --radius:12px;--radius-sm:8px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:'Lato',sans-serif;color:var(--text);overflow:hidden}
+input,button,select{font-family:'Lato',sans-serif}
+
+/* ── HEADER ── */
+.hdr{background:var(--navy);color:#fff;padding:12px 16px 10px;padding-top:calc(12px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:12px;flex-shrink:0}
+.hdr-icon{width:40px;height:40px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-icon span{font-family:'Playfair Display',serif;font-size:13px;color:var(--navy);font-weight:600;line-height:1}
+.hdr-info{flex:1;min-width:0}
+.hdr-title{font-size:15px;font-weight:700;color:#fff;line-height:1.2}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.hdr-status{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.7)}
+.pulse{width:7px;height:7px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+
+/* ── NAV BOTTOM ── */
+.nav{display:flex;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:var(--safe-bottom)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border:none;background:none;cursor:pointer;color:var(--hint);font-size:10px;font-family:'Lato',sans-serif;transition:color .2s;min-width:0}
+.nav-btn i{font-size:20px;line-height:1}
+.nav-btn.on{color:var(--navy)}
+.nav-btn.on i{color:var(--gold)}
+.nav-label{font-size:9px;font-weight:700;letter-spacing:.02em;line-height:1}
+
+/* ── MAIN SCROLL ── */
+.main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page{display:none;padding:14px;padding-bottom:20px}
+.page.on{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:700}
+
+/* ── INPUTS ── */
+.input-wrap{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;margin-bottom:10px;transition:border-color .2s}
+.input-wrap:focus-within{border-color:var(--navy)}
+.input-wrap span{font-size:13px;color:var(--muted);flex-shrink:0}
+.input-wrap input{flex:1;border:none;background:none;padding:11px 0;font-size:15px;color:var(--text);outline:none}
+.input-wrap input::placeholder{color:var(--hint)}
+
+/* ── TOGGLE ── */
+.tog-group{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tog{padding:6px 12px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Lato',sans-serif}
+.tog.on{background:var(--green-bg);border-color:var(--green);color:var(--green-dark)}
+
+/* ── METRIC CARDS ── */
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.metric{background:var(--bg);border-radius:var(--radius-sm);padding:12px}
+.metric.hl{background:var(--green-bg)}
+.metric-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.metric-lbl.hl{color:var(--green-mid)}
+.metric-val{font-size:22px;font-weight:700;color:var(--text)}
+.metric-val.hl{color:var(--green-dark)}
+.metric-sub{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* ── BREAKDOWN ── */
+.bk-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.bk-row:last-child{border-bottom:none;font-weight:700}
+.bk-lbl{color:var(--muted)}
+.bk-val{color:var(--text);font-weight:700}
+
+/* ── BOXES ── */
+.box-info{background:var(--green-bg);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--green-dark);display:flex;gap:8px;margin-top:10px;line-height:1.5}
+.box-warn{background:var(--amber-bg);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--amber-dark);display:flex;gap:8px;margin-top:8px;line-height:1.5}
+.box-danger{background:var(--red-bg);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--red-dark);display:flex;gap:8px;margin-top:8px;line-height:1.5}
+.box-blue{background:var(--blue-bg);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--blue-dark);display:flex;gap:8px;margin-top:8px;line-height:1.5}
+.box-info i,.box-warn i,.box-danger i,.box-blue i{flex-shrink:0;font-size:15px;margin-top:1px}
+
+/* ── STEPS ── */
+.step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.step-n{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.step-body .step-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
+.step-body .step-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.code{display:inline-block;font-family:monospace;font-size:11px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--navy);font-weight:700}
+
+/* ── CO CODES ── */
+.co-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:10px 0}
+.co-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.co-row:last-child{margin-bottom:0}
+.co-badge{flex-shrink:0;font-family:monospace;font-size:12px;font-weight:700;padding:3px 8px;border-radius:99px}
+.co-g{background:var(--green-bg);color:var(--green-dark)}
+.co-a{background:var(--amber-bg);color:var(--amber-dark)}
+.co-text{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ── CHECKLIST ── */
+.prog-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:4px}
+.prog-fill{height:100%;background:var(--green);border-radius:99px;transition:width .3s}
+.prog-label{font-size:11px;color:var(--muted);margin-bottom:14px;font-weight:700}
+.chk-item{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;-webkit-user-select:none;user-select:none}
+.chk-item:last-child{border-bottom:none}
+.chk-box{flex-shrink:0;width:20px;height:20px;border-radius:5px;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .2s}
+.chk-box.done{background:var(--green);border-color:var(--green)}
+.chk-box.done::after{content:'';display:block;width:5px;height:9px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px)}
+.chk-text{flex:1;font-size:13px;color:var(--text);line-height:1.4}
+.chk-text.done{color:var(--hint);text-decoration:line-through}
+.chk-sub{font-size:11px;color:var(--hint);margin-top:2px;line-height:1.3}
+
+/* ── PRAZOS ── */
+.prazo-item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--border)}
+.prazo-item:last-child{border-bottom:none}
+.prazo-left{flex-shrink:0;width:80px}
+.prazo-date{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
+.b-red{background:var(--red-bg);color:var(--red-dark)}
+.b-amber{background:var(--amber-bg);color:var(--amber-dark)}
+.b-green{background:var(--green-bg);color:var(--green-dark)}
+.b-blue{background:var(--blue-bg);color:var(--blue-dark)}
+.prazo-text{font-size:13px;color:var(--text);line-height:1.4}
+.prazo-resp{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* ── ERROS ── */
+.err-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.err-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.err-ico{width:26px;height:26px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.err-ico i{font-size:13px;color:var(--red-dark)}
+.err-title{font-size:13px;font-weight:700;color:var(--text)}
+.err-prob{font-size:12px;color:var(--red-dark);background:var(--red-bg);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:6px;line-height:1.4}
+.err-sol{font-size:12px;color:var(--green-dark);background:var(--green-bg);border-radius:var(--radius-sm);padding:8px 10px;line-height:1.4}
+
+/* ── GLOSSÁRIO ── */
+.glos-item{padding:11px 0;border-bottom:1px solid var(--border)}
+.glos-item:last-child{border-bottom:none}
+.glos-term{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.glos-def{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ── DIVIDERS / MISC ── */
+.divider{height:1px;background:var(--border);margin:10px 0}
+.mde-row{display:flex;gap:8px;margin-bottom:7px}
+.mde-row:last-child{margin-bottom:0}
+.mde-row i{font-size:14px;flex-shrink:0;margin-top:2px}
+.mde-row span{font-size:12px;color:var(--muted);line-height:1.5}
+.link-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.link-row:last-child{border-bottom:none}
+.link-row span{font-size:13px;color:var(--blue-dark)}
+.footer-note{font-size:10px;color:var(--hint);margin-top:14px;padding-top:10px;border-top:1px solid var(--border);line-height:1.5}
+
+/* ── WRAPPER ── */
+.wrapper{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;background:var(--surface)}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-icon"><span>4%<br>ETI</span></div>
+  <div class="hdr-info">
+    <div class="hdr-title">Calculadora FUNDEB ETI</div>
+    <div class="hdr-sub">Resolução CIF nº 23/2026 · MEC/FNDE</div>
+  </div>
+  <div class="hdr-status"><span class="pulse"></span><span id="rel">--:--</span></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ══ PÁGINA 1: CALCULADORA ══ -->
+<div class="page on" id="p-calc">
+  <div class="card">
+    <div class="card-title">Valores do FUNDEB</div>
+    <div class="section-label">Valor total recebido do FUNDEB no exercício (R$)</div>
+    <div class="input-wrap">
+      <span>R$</span>
+      <input type="number" id="vf" inputmode="numeric" placeholder="Ex: 50000000" oninput="calc()">
+    </div>
+    <div class="section-label">Complementações da União</div>
+    <div class="tog-group">
+      <button class="tog on" id="tn" onclick="setC('n',this)">Não recebo</button>
+      <button class="tog" id="tv" onclick="setC('v',this)">VAAF</button>
+      <button class="tog" id="tvt" onclick="setC('vt',this)">VAAF+VAAT</button>
+      <button class="tog" id="tvtr" onclick="setC('vtr',this)">VAAF+VAAT+VAAR</button>
+    </div>
+    <div id="cf" style="display:none">
+      <div class="section-label">Valor total das complementações (R$)</div>
+      <div class="input-wrap">
+        <span>R$</span>
+        <input type="number" id="vc" inputmode="numeric" placeholder="Ex: 8000000" oninput="calc()">
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:-6px;margin-bottom:10px">Base inclui VAAF, VAAT e VAAR — item 1.1 Resolução CIF 23/2026</div>
+    </div>
+  </div>
+
+  <div class="card" id="res" style="display:none">
+    <div class="card-title">Resultado</div>
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-lbl">Base total</div>
+        <div class="metric-val" id="r-base">R$ 0</div>
+        <div class="metric-sub">FUNDEB + complementações</div>
+      </div>
+      <div class="metric hl">
+        <div class="metric-lbl hl">Mínimo 4%</div>
+        <div class="metric-val hl" id="r-4">R$ 0</div>
+        <div class="metric-sub" style="color:var(--green-mid)">Obrigatório por lei</div>
+      </div>
+    </div>
+    <div class="bk-row"><span class="bk-lbl">FUNDEB próprio</span><span class="bk-val" id="bd-f">—</span></div>
+    <div class="bk-row" id="bd-cr" style="display:none"><span class="bk-lbl">Complementações União</span><span class="bk-val" id="bd-c">—</span></div>
+    <div class="bk-row"><span class="bk-lbl">Base total</span><span class="bk-val" id="bd-t">—</span></div>
+    <div class="bk-row"><span class="bk-lbl" style="color:var(--green-mid)">4% obrigatório ETI</span><span class="bk-val" id="bd-4" style="color:var(--green-dark)">—</span></div>
+    <div class="box-info"><i class="ti ti-info-circle"></i><span id="r-info">—</span></div>
+    <div class="box-warn" id="cw" style="display:none"><i class="ti ti-alert-triangle"></i><span>Confirme os valores das complementações no extrato SIOPE/FNDE antes de usar no planejamento oficial.</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">O que posso usar nos 4%?</div>
+    <div class="mde-row"><i class="ti ti-check" style="color:var(--green)"></i><span>Remuneração de profissionais que atuam diretamente no tempo integral</span></div>
+    <div class="mde-row"><i class="ti ti-check" style="color:var(--green)"></i><span>Infraestrutura, obras, reformas e adequação de espaços escolares</span></div>
+    <div class="mde-row"><i class="ti ti-check" style="color:var(--green)"></i><span>Equipamentos, mobiliário, tecnologia e material didático</span></div>
+    <div class="mde-row"><i class="ti ti-check" style="color:var(--green)"></i><span>Transporte (PNATE) e alimentação (PNAE) vinculados ao tempo integral</span></div>
+    <div class="mde-row"><i class="ti ti-check" style="color:var(--green)"></i><span>Formação continuada de gestores e educadores do ETI</span></div>
+    <div class="mde-row"><i class="ti ti-x" style="color:#E24B4A"></i><span>Vedado: inativos, obras não educacionais, assistência social (art. 71 LDB)</span></div>
+    <div class="box-info"><i class="ti ti-info-circle"></i><span>Não há exigência de aplicar 70% dos 4% em remuneração. O mínimo de 70% vale sobre o total do FUNDEB. (FAQ nº 4, Guia MEC)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Etapas permitidas por ente</div>
+    <div class="mde-row"><i class="ti ti-check" style="color:var(--green)"></i><span><b>Município:</b> Educação Infantil e Ensino Fundamental</span></div>
+    <div class="mde-row"><i class="ti ti-x" style="color:#E24B4A"></i><span><b>Município:</b> Ensino Médio — vedado constitucionalmente (art. 211 CF/88)</span></div>
+    <div class="mde-row"><i class="ti ti-check" style="color:var(--green)"></i><span><b>Estado:</b> Ensino Fundamental e Ensino Médio</span></div>
+    <div class="mde-row"><i class="ti ti-x" style="color:#E24B4A"></i><span><b>Estado:</b> Educação Infantil — vedado para estados</span></div>
+  </div>
+
+  <div class="footer-note">Base: Resolução CIF nº 23/2026 — Guia de Orientação a Gestores MEC/FNDE (abril/2026) — EC nº 135/2024. Este app é orientativo. Confirme valores com o setor de contabilidade.</div>
+</div>
+
+<!-- ══ PÁGINA 2: SIOPE ══ -->
+<div class="page" id="p-siope">
+  <div class="card">
+    <div class="card-title">Passo a passo no SIOPE</div>
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <div class="step-title">Acesse com certificado digital</div>
+        <div class="step-desc">Portal: <b>siope.fnde.gov.br</b> — use o certificado da secretaria de educação com perfil de preenchimento ativo.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <div class="step-title">Lance as receitas na natureza correta</div>
+        <div class="step-desc">Natureza de Receita: <span class="code">NR 17155300</span> · Linhas complementares: <span class="code">19.18</span> e <span class="code">22.8</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <div class="step-title">Use a planilha "Fomento Tempo Integral (4%)"</div>
+        <div class="step-desc">Continue registrando despesas nas planilhas normais (subfunções 361, 362, 365...) e inclua nessa planilha específica apenas as despesas ETI. O SIOPE não conta em duplicidade.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body">
+        <div class="step-title">Lance as despesas na Fonte 546</div>
+        <div class="step-desc"><span class="code">Fonte 546</span> — grupo "Despesas Custeadas com Receitas do FUNDEB Recebidas no Exercício + Superavit". Discrimine custeio e capital separadamente.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">5</div>
+      <div class="step-body">
+        <div class="step-title">Aplique os códigos de acompanhamento</div>
+        <div class="step-desc">Toda despesa ETI precisa de CO 1071 ou CO 1072 na execução orçamentária (Portaria STN/MF nº 963/2026).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">6</div>
+      <div class="step-body">
+        <div class="step-title">Verifique o Anexo 8 do RREO</div>
+        <div class="step-desc">Confirme que os valores CO 1071 e CO 1072 aparecem corretamente no demonstrativo. Apresente ao CACS-FUNDEB bimestralmente.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="co-card">
+    <div class="card-title">Códigos obrigatórios (Portaria STN/MF nº 963/2026)</div>
+    <div class="co-row">
+      <span class="co-badge co-g">CO 1071</span>
+      <div class="co-text">Para despesas <b>exclusivamente</b> voltadas à criação de matrículas em tempo integral, sem envolver folha de pagamento.</div>
+    </div>
+    <div class="co-row">
+      <span class="co-badge co-a">CO 1072</span>
+      <div class="co-text">Para despesas que combinam <b>simultaneamente</b> folha de pagamento dos profissionais (mín. 70%) e criação de matrículas ETI (mín. 4%).</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Ciclo de declaração bimestral</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6">São <b style="color:var(--text)">6 declarações por ano</b>. O ente tem até <b style="color:var(--text)">30 dias</b> após o encerramento de cada bimestre para transmitir. (FAQ nº 8, Guia MEC)</div>
+  </div>
+
+  <div class="box-danger"><i class="ti ti-x"></i><span>Não transmitir ou descumprir os percentuais gera inadimplência no CAUC — bloqueando todas as transferências voluntárias da União. (FAQ nº 6 e 7)</span></div>
+  <div class="box-warn"><i class="ti ti-alert-triangle"></i><span>O SIOPE segue em atualização. Verifique regularmente fnde.gov.br/siope para confirmar a disponibilidade dos módulos do seu município.</span></div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="card-title">Canais oficiais</div>
+    <div class="link-row" onclick="window.open('https://www.gov.br/fnde/pt-br/assuntos/sistemas/siope')">
+      <i class="ti ti-external-link" style="font-size:15px;color:var(--blue-dark)"></i>
+      <span>SIOPE — Fale Conosco (dúvidas de preenchimento)</span>
+    </div>
+    <div class="link-row" onclick="window.open('mailto:escolaemtempointegral@mec.gov.br')">
+      <i class="ti ti-mail" style="font-size:15px;color:var(--blue-dark)"></i>
+      <span>escolaemtempointegral@mec.gov.br</span>
+    </div>
+  </div>
+  <div class="footer-note">Base: Resolução CIF nº 23/2026 itens 2.5 e 3.1.3 — Guia MEC pág. 13-14 — Portaria STN/MF nº 963/2026 — Nota Técnica SEI nº 5461/2025/MF.</div>
+</div>
+
+<!-- ══ PÁGINA 3: PLANO ══ -->
+<div class="page" id="p-plano">
+  <div class="card">
+    <div class="card-title">O que é o Plano de Expansão</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6">Instrumento central da Resolução CIF nº 23/2026. Deve registrar estimativas anuais de matrículas, ações e estratégias de implementação, alinhado ao <b style="color:var(--text)">PNE 2026-2036</b> (Lei nº 15.388/2026).<br><br>Meta 6 do PNE: <b style="color:var(--text)">50% das escolas / 35% dos alunos em 5 anos</b>; 65% das escolas / 50% dos alunos até 2036.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Checklist de elaboração</div>
+    <div class="prog-bar"><div class="prog-fill" id="pf" style="width:0%"></div></div>
+    <div class="prog-label"><span id="pc">0 de 12</span> itens concluídos</div>
+    <div id="chks">
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Levantar número atual de matrículas em tempo integral por etapa<div class="chk-sub">Usar dados do Censo Escolar INEP como linha de base</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Definir metas anuais de criação de matrículas até o fim do PNE<div class="chk-sub">Meta 6 PNE 2026-2036: 50% escolas / 35% alunos em 5 anos</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Identificar escolas prioritárias para expansão<div class="chk-sub">Priorizar maior vulnerabilidade socioeconômica — princípio da equidade</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Mapear condições de infraestrutura de cada escola<div class="chk-sub">Despesas de capital podem preparar expansão para anos seguintes</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Estimar o investimento anual necessário<div class="chk-sub">Detalhar custeio e capital separadamente conforme SIOPE</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Verificar âmbito de atuação prioritária do ente<div class="chk-sub">Município: Ed. Infantil + Fund. (vedado no Ensino Médio)</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Alinhar proposta pedagógica à Resolução CNE/CEB nº 7/2025<div class="chk-sub">Princípios: acesso, permanência, equidade, qualidade e diversidade</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Confirmar jornada mínima de 7h diárias ou 35h semanais<div class="chk-sub">Definição legal — abaixo disso não conta como tempo integral</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Articular com PNAE (alimentação) e PNATE (transporte)<div class="chk-sub">MEC garante suporte financeiro suplementar via esses programas</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Submeter ao CACS-FUNDEB para aprovação<div class="chk-sub">Conselho é responsável pelo acompanhamento e fiscalização</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Registrar o Plano no sistema do MEC<div class="chk-sub">Prazo: 60 dias após disponibilização pelo MEC (pós-publicação do PNE)</div></div></div>
+      <div class="chk-item" onclick="tick(this)"><div class="chk-box"></div><div class="chk-text">Atualizar normativo municipal de educação em tempo integral<div class="chk-sub">Prazo: até 1º de julho de 2026</div></div></div>
+    </div>
+  </div>
+  <div class="box-info"><i class="ti ti-info-circle"></i><span>O Plano pode prever anos de maior investimento em capital com menor criação imediata de matrículas. Planejamento plurianual é válido. (Resolução CIF nº 23/2026, item 2.6 e FAQ nº 22)</span></div>
+  <div class="footer-note">Base: Resolução CIF nº 23/2026 itens 2.10, 3.1.1, 3.1.2 — Guia MEC pág. 19-21 — PNE 2026-2036 Lei nº 15.388/2026.</div>
+</div>
+
+<!-- ══ PÁGINA 4: PRAZOS + ERROS + GLOSSÁRIO ══ -->
+<div class="page" id="p-mais">
+
+  <!-- SUBMENU -->
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="tog on" id="sm-prazos" onclick="subNav('prazos',this)" style="flex:1;border-radius:var(--radius-sm)">Prazos</button>
+    <button class="tog" id="sm-erros" onclick="subNav('erros',this)" style="flex:1;border-radius:var(--radius-sm)">Erros</button>
+    <button class="tog" id="sm-glos" onclick="subNav('glos',this)" style="flex:1;border-radius:var(--radius-sm)">Glossário</button>
+  </div>
+
+  <!-- PRAZOS -->
+  <div id="sub-prazos">
+    <div class="card">
+      <div class="card-title">Calendário 2026</div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">30/04/2026</div><span class="badge b-red">encerrado</span></div>
+        <div><div class="prazo-text">Usar recursos ciclo 2 ETI repassados até dez/2025</div><div class="prazo-resp">Estados, municípios, DF</div></div>
+      </div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">01/07/2026</div><span class="badge b-amber">urgente</span></div>
+        <div><div class="prazo-text">Revisar ou criar normativo municipal de educação em tempo integral</div><div class="prazo-resp">Redes de ensino</div></div>
+      </div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">31/10/2026</div><span class="badge b-green">vigente</span></div>
+        <div><div class="prazo-text">Usar recursos do ciclo 1 ETI (2023/2024)</div><div class="prazo-resp">Estados, municípios, DF</div></div>
+      </div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">31/12/2026</div><span class="badge b-green">vigente</span></div>
+        <div><div class="prazo-text">Prestação de contas ciclo 1 no BB Gestão Ágil</div><div class="prazo-resp">Estados, municípios, DF</div></div>
+      </div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">31/12/2026</div><span class="badge b-green">vigente</span></div>
+        <div><div class="prazo-text">Executar recursos ciclo 2 creditados em jan/2026</div><div class="prazo-resp">Estados, municípios, DF</div></div>
+      </div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">Anual</div><span class="badge b-blue">contínuo</span></div>
+        <div><div class="prazo-text">Destinar mínimo 4% do FUNDEB para expansão do tempo integral</div><div class="prazo-resp">Vigente desde jan/2026</div></div>
+      </div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">Bimestral</div><span class="badge b-blue">contínuo</span></div>
+        <div><div class="prazo-text">Transmissão dos dados ao SIOPE (até 30 dias após cada bimestre)</div><div class="prazo-resp">Redes de ensino</div></div>
+      </div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">60d pós-PNE</div><span class="badge b-blue">aguarda</span></div>
+        <div><div class="prazo-text">MEC publica orientações sobre registro do Plano de Expansão</div><div class="prazo-resp">SEB/MEC</div></div>
+      </div>
+      <div class="prazo-item">
+        <div class="prazo-left"><div class="prazo-date">+60 dias</div><span class="badge b-blue">aguarda</span></div>
+        <div><div class="prazo-text">Estados, municípios e DF registram seus Planos de Expansão</div><div class="prazo-resp">Após disponibilização MEC</div></div>
+      </div>
+    </div>
+    <div class="footer-note">Base: Resolução CIF nº 23/2026 — Guia MEC pág. 22-23 — Resolução CNM (março/2026).</div>
+  </div>
+
+  <!-- ERROS -->
+  <div id="sub-erros" style="display:none">
+    <div class="err-card"><div class="err-hdr"><div class="err-ico"><i class="ti ti-x"></i></div><div class="err-title">Investir sem plano</div></div><div class="err-prob">Sem planejamento o recurso vira irregularidade na prestação de contas</div><div class="err-sol">Elaborar o Plano de Expansão antes de executar qualquer gasto</div></div>
+    <div class="err-card"><div class="err-hdr"><div class="err-ico"><i class="ti ti-x"></i></div><div class="err-title">Não incluir as complementações no cálculo</div></div><div class="err-prob">Calcular 4% só sobre o FUNDEB próprio — valor calculado fica menor que o obrigatório</div><div class="err-sol">Base = FUNDEB + VAAF + VAAT + VAAR (item 1.1 Resolução CIF 23/2026)</div></div>
+    <div class="err-card"><div class="err-hdr"><div class="err-ico"><i class="ti ti-x"></i></div><div class="err-title">Confundir carga horária com matrícula</div></div><div class="err-prob">Ampliar horário sem criar nova matrícula comprovada não conta para o percentual</div><div class="err-sol">Criar matrículas reais com registro no Censo Escolar e documentação</div></div>
+    <div class="err-card"><div class="err-hdr"><div class="err-ico"><i class="ti ti-x"></i></div><div class="err-title">Não usar os códigos CO corretos</div></div><div class="err-prob">Lançamento sem CO 1071 ou CO 1072 não é reconhecido como aplicação ETI</div><div class="err-sol">Usar CO 1071 ou CO 1072 em todas as despesas vinculadas ao tempo integral</div></div>
+    <div class="err-card"><div class="err-hdr"><div class="err-ico"><i class="ti ti-x"></i></div><div class="err-title">Município aplicar no Ensino Médio</div></div><div class="err-prob">Municípios não podem usar FUNDEB no Ensino Médio — vedação constitucional</div><div class="err-sol">Municípios aplicam apenas em Ed. Infantil e Ensino Fundamental (art. 211 CF/88)</div></div>
+    <div class="err-card"><div class="err-hdr"><div class="err-ico"><i class="ti ti-x"></i></div><div class="err-title">Não transmitir o SIOPE no prazo</div></div><div class="err-prob">Inadimplência no CAUC — bloqueio de todas as transferências voluntárias da União</div><div class="err-sol">Transmissão bimestral em até 30 dias após cada bimestre, sem exceção</div></div>
+    <div class="err-card"><div class="err-hdr"><div class="err-ico"><i class="ti ti-x"></i></div><div class="err-title">Excluir o CACS-FUNDEB do processo</div></div><div class="err-prob">Ausência de controle social pode gerar irregularidade nos órgãos de controle</div><div class="err-sol">Apresentar demonstrativos bimestralmente e manter atas de aprovação do conselho</div></div>
+    <div class="err-card"><div class="err-hdr"><div class="err-ico"><i class="ti ti-x"></i></div><div class="err-title">Confundir ciclo 1 e ciclo 2 do ETI</div></div><div class="err-prob">Regras, prazos e sistemas de prestação de contas são diferentes para cada ciclo</div><div class="err-sol">Ciclo 1 → BB Gestão Ágil (31/12/2026); Ciclo 2 → regras FUNDEB</div></div>
+    <div class="footer-note">Base: Guia MEC/FNDE (abril/2026) — FAQ nº 6, 7, 8, 9 — Resolução CIF nº 23/2026.</div>
+  </div>
+
+  <!-- GLOSSÁRIO -->
+  <div id="sub-glos" style="display:none">
+    <div class="card">
+      <div class="card-title">Glossário técnico</div>
+      <div class="glos-item"><div class="glos-term">FUNDEB</div><div class="glos-def">Fundo de Manutenção e Desenvolvimento da Educação Básica. Regulamentado pela Lei nº 14.113/2020 e EC nº 135/2024.</div></div>
+      <div class="glos-item"><div class="glos-term">VAAF / VAAT / VAAR</div><div class="glos-def">Complementações da União ao FUNDEB: Valor Aluno-Ano Fundeb, Total e Resultado de Redução de Desigualdades. Todas entram na base de cálculo dos 4%.</div></div>
+      <div class="glos-item"><div class="glos-term">ETI</div><div class="glos-def">Educação em Tempo Integral — jornada igual ou superior a 7h diárias ou 35h semanais (Lei nº 14.640/2023).</div></div>
+      <div class="glos-item"><div class="glos-term">SIOPE</div><div class="glos-def">Sistema de Informações sobre Orçamentos Públicos em Educação — sistema do FNDE para declaração de receitas e despesas com educação.</div></div>
+      <div class="glos-item"><div class="glos-term">CO 1071 / CO 1072</div><div class="glos-def">Códigos de Acompanhamento da Execução Orçamentária criados pela Portaria STN/MF nº 963/2026 para identificar despesas ETI.</div></div>
+      <div class="glos-item"><div class="glos-term">Fonte 546</div><div class="glos-def">Classificação orçamentária no SIOPE para despesas ETI custeadas com receitas do FUNDEB.</div></div>
+      <div class="glos-item"><div class="glos-term">NR 17155300</div><div class="glos-def">Natureza de Receita para registro das complementações da União destinadas ao fomento do tempo integral.</div></div>
+      <div class="glos-item"><div class="glos-term">CAUC</div><div class="glos-def">Cadastro Único de Convênios. Inadimplência bloqueia o recebimento de transferências voluntárias da União.</div></div>
+      <div class="glos-item"><div class="glos-term">CACS-FUNDEB</div><div class="glos-def">Conselho de Acompanhamento e Controle Social do FUNDEB. Fiscaliza a aplicação dos recursos bimestralmente.</div></div>
+      <div class="glos-item"><div class="glos-term">RREO / Anexo 8</div><div class="glos-def">Relatório Resumido da Execução Orçamentária. O Anexo 8 evidencia especificamente despesas com tempo integral a partir de 2026.</div></div>
+      <div class="glos-item"><div class="glos-term">MDE</div><div class="glos-def">Manutenção e Desenvolvimento do Ensino — finalidade obrigatória de todo recurso do FUNDEB (art. 70 LDB).</div></div>
+      <div class="glos-item"><div class="glos-term">PNE 2026-2036</div><div class="glos-def">Plano Nacional de Educação (Lei nº 15.388/2026). Meta 6: 50% escolas / 35% alunos em 5 anos; 65% / 50% até 2036.</div></div>
+      <div class="glos-item"><div class="glos-term">Resolução CIF nº 23/2026</div><div class="glos-def">Resolução da Comissão Intergovernamental de Financiamento de 17/03/2026 — define as diretrizes para aplicação dos 4% do FUNDEB no tempo integral.</div></div>
+      <div class="glos-item"><div class="glos-term">EC nº 135/2024</div><div class="glos-def">Emenda Constitucional de 20/12/2024 — vincula permanentemente 4% do FUNDEB à criação de matrículas em tempo integral.</div></div>
+      <div class="glos-item"><div class="glos-term">PNAE / PNATE</div><div class="glos-def">Programas Nacionais de Alimentação Escolar e Transporte Escolar — suporte financeiro suplementar do MEC para alunos em tempo integral.</div></div>
+    </div>
+    <div class="footer-note">Base: Guia de Orientação a Gestores — Resolução CIF nº 23/2026 — MEC/FNDE, Brasília, abril/2026.</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- NAV BOTTOM -->
+<div class="nav">
+  <button class="nav-btn on" id="nb-calc" onclick="goPage('calc',this)">
+    <i class="ti ti-calculator"></i>
+    <span class="nav-label">Calculadora</span>
+  </button>
+  <button class="nav-btn" id="nb-siope" onclick="goPage('siope',this)">
+    <i class="ti ti-file-check"></i>
+    <span class="nav-label">SIOPE</span>
+  </button>
+  <button class="nav-btn" id="nb-plano" onclick="goPage('plano',this)">
+    <i class="ti ti-clipboard-list"></i>
+    <span class="nav-label">Plano</span>
+  </button>
+  <button class="nav-btn" id="nb-mais" onclick="goPage('mais',this)">
+    <i class="ti ti-dots"></i>
+    <span class="nav-label">Mais</span>
+  </button>
+</div>
+
+</div><!-- /wrapper -->
+
+<script>
+// ── RELÓGIO ──
+function tick(){const n=new Date();document.getElementById('rel').textContent=n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,1000);
+
+// ── NAVEGAÇÃO PRINCIPAL ──
+function goPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  btn.classList.add('on');
+  document.querySelector('.main').scrollTop=0;
+}
+
+// ── SUBNAVEGAÇÃO ──
+function subNav(id,btn){
+  ['prazos','erros','glos'].forEach(s=>{
+    document.getElementById('sub-'+s).style.display='none';
+    document.getElementById('sm-'+s).classList.remove('on');
+  });
+  document.getElementById('sub-'+id).style.display='block';
+  btn.classList.add('on');
+}
+
+// ── CALCULADORA ──
+let ct='n';
+function setC(t,btn){
+  ct=t;
+  document.querySelectorAll('.tog-group .tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('cf').style.display=t==='n'?'none':'block';
+  document.getElementById('bd-cr').style.display=t==='n'?'none':'flex';
+  calc();
+}
+function fmt(v){return'R$ '+Math.round(v).toLocaleString('pt-BR');}
+function calc(){
+  const f=parseFloat(document.getElementById('vf').value)||0;
+  const c=ct!=='n'?(parseFloat(document.getElementById('vc').value)||0):0;
+  if(f===0){document.getElementById('res').style.display='none';return;}
+  const base=f+c,m=base*0.04,men=m/12;
+  document.getElementById('res').style.display='block';
+  document.getElementById('r-base').textContent=fmt(base);
+  document.getElementById('r-4').textContent=fmt(m);
+  document.getElementById('bd-f').textContent=fmt(f);
+  document.getElementById('bd-c').textContent=fmt(c);
+  document.getElementById('bd-t').textContent=fmt(base);
+  document.getElementById('bd-4').textContent=fmt(m);
+  document.getElementById('r-info').textContent='Mínimo mensal estimado: '+fmt(men)+'. Registre o valor anual na planilha "Fomento Tempo Integral (4%)" do SIOPE.';
+  document.getElementById('cw').style.display=c>0?'flex':'none';
+}
+
+// ── CHECKLIST ──
+function tick2(item){
+  const box=item.querySelector('.chk-box');
+  const txt=item.querySelector('.chk-text');
+  const done=box.classList.toggle('done');
+  txt.classList.toggle('done',done);
+  const all=document.querySelectorAll('#chks .chk-box').length;
+  const dc=document.querySelectorAll('#chks .chk-box.done').length;
+  document.getElementById('pf').style.width=Math.round(dc/all*100)+'%';
+  document.getElementById('pc').textContent=dc+' de '+all;
+}
+// Renomear onclick nos itens para tick2
+document.querySelectorAll('#chks .chk-item').forEach(el=>{
+  el.removeAttribute('onclick');
+  el.addEventListener('click',function(){tick2(this);});
+});
+
+// ── PWA SERVICE WORKER ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
+}
+</script>
+</body>
+</html>
