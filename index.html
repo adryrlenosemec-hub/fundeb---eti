@@ -41,11 +41,11 @@ input,button,select{font-family:'Lato',sans-serif}
 
 /* ── NAV BOTTOM ── */
 .nav{display:flex;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:var(--safe-bottom)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:none;background:none;cursor:pointer;color:var(--hint);font-size:10px;font-family:'Lato',sans-serif;transition:color .2s;min-width:0;overflow:hidden}
-.nav-btn i{font-size:18px;line-height:1}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border:none;background:none;cursor:pointer;color:var(--hint);font-size:10px;font-family:'Lato',sans-serif;transition:color .2s;min-width:0;overflow:hidden}
+.nav-btn i{font-size:20px;line-height:1}
 .nav-btn.on{color:var(--navy)}
 .nav-btn.on i{color:var(--gold)}
-.nav-label{font-size:8px;font-weight:700;white-space:nowrap;letter-spacing:.02em;line-height:1}
+.nav-label{font-size:9px;font-weight:700;white-space:nowrap;letter-spacing:.02em;line-height:1}
 
 /* ── MAIN SCROLL ── */
 .main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -485,63 +485,13 @@ input,button,select{font-family:'Lato',sans-serif}
 </div>
 
 
-<!-- ══ PÁGINA CONSULTA ══ -->
-<div class="page" id="p-consulta">
-  <div class="card">
-    <div class="card-title">Consulta por município</div>
-    <p class="section-label">Estado (UF)</p>
-    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px">
-      <select id="sel-uf" onchange="filtrarMunicipios()" style="width:100%;padding:11px 12px;font-size:15px;border:none;background:none;color:var(--text);font-family:'Lato',sans-serif;outline:none">
-        <option value="">Selecione o estado...</option>
-      </select>
-    </div>
-    <p class="section-label">Município / Ente</p>
-    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px">
-      <select id="sel-mun" onchange="exibirDados()" style="width:100%;padding:11px 12px;font-size:15px;border:none;background:none;color:var(--text);font-family:'Lato',sans-serif;outline:none" disabled>
-        <option value="">Selecione o município...</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="card" id="dados-card" style="display:none">
-    <div class="card-title">Receita total prevista do FUNDEB 2026</div>
-    <div style="font-size:10px;color:var(--hint);margin-bottom:12px">Portaria Interministerial MEC/MF nº 6, de 29 de Abril de 2026</div>
-
-    <div class="bk-row"><span class="bk-lbl">Contribuição de estados e municípios</span><span class="bk-val" id="d-contrib">—</span></div>
-    <div class="bk-row" id="row-vaaf"><span class="bk-lbl">Complementação VAAF</span><span class="bk-val" id="d-vaaf">—</span></div>
-    <div class="bk-row" id="row-vaat"><span class="bk-lbl">Complementação VAAT</span><span class="bk-val" id="d-vaat">—</span></div>
-    <div class="bk-row" id="row-vaar"><span class="bk-lbl">Complementação VAAR</span><span class="bk-val" id="d-vaar">—</span></div>
-    <div class="bk-row"><span class="bk-lbl">Complementação da União Total</span><span class="bk-val" id="d-comp">—</span></div>
-    <div class="bk-row"><span class="bk-lbl" style="color:var(--green-mid);font-weight:700">Total das receitas previstas</span><span class="bk-val" id="d-total" style="color:var(--green-dark);font-size:15px">—</span></div>
-
-    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
-      <p style="font-size:12px;color:var(--muted);margin-bottom:8px">4% obrigatório para tempo integral:</p>
-      <div style="background:var(--green-bg);border-radius:var(--radius-sm);padding:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span style="font-size:13px;color:var(--green-mid);font-weight:700">Mínimo 4% (base total)</span>
-        <span style="font-size:20px;font-weight:700;color:var(--green-dark)" id="d-4pct">—</span>
-      </div>
-      <button onclick="usarNaCalculadora()" style="width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;font-family:'Lato',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-        <i class="ti ti-calculator" aria-hidden="true" style="font-size:18px"></i>
-        Usar na Calculadora
-      </button>
-    </div>
-  </div>
-
-  <div class="card" id="sem-dados-card" style="display:none">
-    <div style="text-align:center;padding:20px 0;color:var(--muted);font-size:13px">
-      Selecione um estado e município para ver os dados.
-    </div>
-  </div>
-
-  <div class="footer-note">Fonte: Portaria Interministerial MEC/MF nº 6, de 29 de Abril de 2026. Valores previstos para o exercício de 2026. Os valores reais podem variar conforme atualizações quadrimestrais do FNDE.</div>
-</div>
 </div><!-- /main -->
 
 <!-- NAV BOTTOM -->
 <div class="nav">
   <button class="nav-btn on" id="nb-calc" onclick="goPage('calc',this)">
     <i class="ti ti-calculator"></i>
-    <span class="nav-label">Calc.</span>
+    <span class="nav-label">Calculadora</span>
   </button>
   <button class="nav-btn" id="nb-siope" onclick="goPage('siope',this)">
     <i class="ti ti-file-check"></i>
@@ -550,10 +500,6 @@ input,button,select{font-family:'Lato',sans-serif}
   <button class="nav-btn" id="nb-plano" onclick="goPage('plano',this)">
     <i class="ti ti-clipboard-list"></i>
     <span class="nav-label">Plano</span>
-  </button>
-  <button class="nav-btn" id="nb-consulta" onclick="goPage('consulta',this)">
-    <i class="ti ti-search"></i>
-    <span class="nav-label">Consulta</span>
   </button>
   <button class="nav-btn" id="nb-mais" onclick="goPage('mais',this)">
     <i class="ti ti-dots"></i>
@@ -689,9 +635,6 @@ function preencherCalc(){
   calc();
   _dadosAtual={fundeb:m.c,comp:m.ct,total:m.t};
 }
-
-
-})();
 
 function filtrarMunicipios(){
   const uf=document.getElementById('sel-uf').value;
